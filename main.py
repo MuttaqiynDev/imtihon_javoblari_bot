@@ -1,4 +1,5 @@
 import asyncio
+from aiohttp import web
 import os
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
@@ -77,11 +78,26 @@ async def subject_handler(callback: types.CallbackQuery):
 
     await callback.answer()
 
+async def handle(request):
+    return web.Response(text="Bot tirik!")
+
+async def start_web_app():
+    app = web.Application()
+    app.router.add_get("/", handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", 8080)
+    await site.start()
 
 async def main():
     init_db()
-    seed_files()  # faqat bir martalik ishga tushiring (keyin olib tashlang)
-    await dp.start_polling(bot)
+    # seed_files()  # faqat bir marta
 
+    # Ikki ishni parallel bajaramiz:
+    await asyncio.gather(
+        dp.start_polling(bot),
+        start_web_app()  # web server start bo‘ladi
+    )
+    
 if __name__ == "__main__":
     asyncio.run(main())
