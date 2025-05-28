@@ -88,7 +88,7 @@ async def main():
     # Ikki ishni parallel bajaramiz:
     await asyncio.gather(
         dp.start_polling(bot),
-        start_web_app()  # web server start bo‘ladi
+        keep_alive()  # web server start bo‘ladi
     )
     
 if __name__ == "__main__":
