@@ -69,20 +69,11 @@ async def subject_handler(callback: types.CallbackQuery):
     await callback.answer()
 
 # 🚨 Fayllar bazada mavjud emasligini tekshiramiz
-def should_seed():
-    import sqlite3
-    conn = sqlite3.connect("bot.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM files")
-    count = cursor.fetchone()[0]
-    conn.close()
-    return count == 0
+
 
 async def main():
     init_db()
-    if should_seed():      # 👈 Fayllar yo‘q bo‘lsa
-        seed_files()       # ➕ Fayllarni yuklab beradi
-
+    seed_files()  # <<< BU YERNI QO‘SHING FAQAT 1 MARTALIK UCHUN
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
