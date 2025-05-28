@@ -5,7 +5,7 @@ from aiogram.filters import CommandStart
 from config import BOT_TOKEN
 from keyboards import main_menu, back_menu, subject_menu
 from database import init_db, get_subjects_by_grade, get_file_by_subject
-from seed_files import seed_files  # 🚀 Qo‘shildi
+from seed_files import seed_files  # Bazani to'ldirish uchun
 
 # Bot va dispatcher obyektlarini yaratamiz
 bot = Bot(token=BOT_TOKEN)
@@ -50,7 +50,18 @@ async def subject_handler(callback: types.CallbackQuery):
     subject = callback.data
     file_path = get_file_by_subject(grade, subject)
 
-    if file_path and os.path.exists(file_path):
+    # To'liq yo'lni olish uchun:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    if file_path:
+        full_path = os.path.join(BASE_DIR, file_path)
+    else:
+        full_path = None
+
+    # DEBUG uchun:
+    print(f"DEBUG: full_path = {full_path}")
+    print(f"DEBUG: exists = {os.path.exists(full_path) if full_path else False}")
+
+    if full_path and os.path.exists(full_path):
         subject = callback.data.replace("_", " ").lower()
         caption = (
             f"📚 Fan: {grade} {subject.capitalize()}\n"
@@ -60,7 +71,7 @@ async def subject_handler(callback: types.CallbackQuery):
         )
 
         await callback.message.answer_document(
-            document=types.FSInputFile(file_path),
+            document=types.FSInputFile(full_path),
             caption=caption
         )
     else:
@@ -68,12 +79,9 @@ async def subject_handler(callback: types.CallbackQuery):
 
     await callback.answer()
 
-# 🚨 Fayllar bazada mavjud emasligini tekshiramiz
-
-
 async def main():
     init_db()
-    seed_files()  # <<< BU YERNI QO‘SHING FAQAT 1 MARTALIK UCHUN
+    # seed_files() # Faol qilish faqat birinchi ishga tushirishda kerak
     await dp.start_polling(bot)
 
 if __name__ == "__main__":

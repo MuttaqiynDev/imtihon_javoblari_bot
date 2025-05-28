@@ -30,13 +30,6 @@ def get_subjects_by_grade(grade):
     conn.close()
     return [row[0] for row in result]
 
-def should_seed():
-    conn = sqlite3.connect("bot.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM files")
-    count = cursor.fetchone()[0]
-    conn.close()
-    return count == 0
 
 def get_file_by_subject(grade, subject):
     conn = sqlite3.connect(DB_NAME)
