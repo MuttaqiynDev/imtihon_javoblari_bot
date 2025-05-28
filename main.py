@@ -3,27 +3,26 @@ import os
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
 from config import BOT_TOKEN
-from keyboards import main_menu, back_menu, subject_menu
+from keyboards import main_menu, subject_menu
 from database import init_db, get_subjects_by_grade, get_file_by_subject
-from seed_files import seed_files
+from seed_files import seed_files  # faqat 1-marta ishga tushirish uchun
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 user_grade = {}
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # main.py joylashgan papka
 
 @dp.message(CommandStart())
 async def start_handler(message: types.Message):
     first_name = message.from_user.first_name
-
     welcome_text = (
         f"👋 Assalomu alaykum, <b>{first_name}</b>!\n\n"
         f"📚 <b>2025-yilgi Imtihon Javoblari Botiga</b> xush kelibsiz!\n\n"
         f"Bu yerda siz o'zingizga kerakli bo'lgan fanlar bo'yicha imtihon javoblarini bepul yuklab olishingiz mumkin.\n\n"
         f"⬇️ Iltimos, sinfingizni tanlang:"
     )
-
     await message.answer(welcome_text, reply_markup=main_menu(), parse_mode="HTML")
 
 @dp.message(F.text.in_(["9-sinf", "11-sinf"]))
@@ -35,8 +34,6 @@ async def grade_handler(message: types.Message):
         await message.answer(f"{grade} uchun fanlar ro'yxati:", reply_markup=subject_menu(subjects))
     else:
         await message.answer("Hozircha bu sinf uchun materiallar mavjud emas.")
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @dp.callback_query()
 async def subject_handler(callback: types.CallbackQuery):
@@ -52,7 +49,9 @@ async def subject_handler(callback: types.CallbackQuery):
     file_path = get_file_by_subject(grade, subject)
 
     if file_path:
-        full_path = os.path.join(BASE_DIR, file_path)  # To‘liq yo‘lni hosil qilamiz
+        full_path = os.path.join(BASE_DIR, file_path)
+        print(f"[DEBUG] Fayl izlanmoqda: {full_path}")
+
         if os.path.exists(full_path):
             subject_display = subject.replace("_", " ").capitalize()
             caption = (
@@ -61,7 +60,6 @@ async def subject_handler(callback: types.CallbackQuery):
                 f"🔗 @imtihon_javoblari_2025robot\n"
                 f"🔗 @imtihon_javoblari_2025robot"
             )
-
             await callback.message.answer_document(
                 document=types.FSInputFile(full_path),
                 caption=caption
@@ -73,10 +71,9 @@ async def subject_handler(callback: types.CallbackQuery):
 
     await callback.answer()
 
-
 async def main():
     init_db()
-    seed_files()  # 1 martalik uchun, agar fayllar bazada bor bo'lsa o'chirib qo'yish mumkin
+    seed_files()  # faqat bir martalik ishga tushiring (keyin olib tashlang)
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
