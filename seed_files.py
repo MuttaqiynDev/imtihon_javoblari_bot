@@ -3,7 +3,7 @@ from database import add_file, init_db
 
 def seed_files():
     base_path = "files"
-    init_db()  # Bazani boshlaymiz
+    init_db()
 
     for grade_folder in os.listdir(base_path):
         grade_path = os.path.join(base_path, grade_folder)
@@ -12,13 +12,10 @@ def seed_files():
             continue
 
         for filename in os.listdir(grade_path):
-            file_path = os.path.join(grade_path, filename)
+            # Nisbiy fayl yo'li bazaga saqlanadi: files/9-sinf/algebra.pdf
+            relative_path = os.path.join("files", grade_folder, filename)
 
-            # Fayl nomidan subject ni ajratamiz (masalan, "algebra.pdf" → "algebra")
-            subject = os.path.splitext(filename)[0].replace("-", " ").replace("_", " ").lower()
-
-            # Qo'shilayotgan file_path nisbiy bo'lishi kerak, ya'ni files/9-sinf/algebra.pdf ko'rinishida
-            relative_path = os.path.relpath(file_path)
+            subject = os.path.splitext(filename)[0].replace("-", "_").lower()
 
             add_file(grade=grade_folder, subject=subject, file_path=relative_path)
             print(f"Qo‘shildi: [{grade_folder}] {subject} → {relative_path}")

@@ -5,13 +5,12 @@ from aiogram.filters import CommandStart
 from config import BOT_TOKEN
 from keyboards import main_menu, back_menu, subject_menu
 from database import init_db, get_subjects_by_grade, get_file_by_subject
-from seed_files import seed_files  # Bazani to'ldirish uchun
+from seed_files import seed_files
 
-# Bot va dispatcher obyektlarini yaratamiz
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
-# Sinfni vaqtincha saqlash uchun lug‘at (agar state ishlatilmasa)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 user_grade = {}
 
 @dp.message(CommandStart())
@@ -30,7 +29,7 @@ async def start_handler(message: types.Message):
 @dp.message(F.text.in_(["9-sinf", "11-sinf"]))
 async def grade_handler(message: types.Message):
     grade = message.text
-    user_grade[message.from_user.id] = grade  # Foydalanuvchi sinfini saqlab qo'yamiz
+    user_grade[message.from_user.id] = grade
     subjects = get_subjects_by_grade(grade)
     if subjects:
         await message.answer(f"{grade} uchun fanlar ro'yxati:", reply_markup=subject_menu(subjects))
@@ -50,30 +49,23 @@ async def subject_handler(callback: types.CallbackQuery):
     subject = callback.data
     file_path = get_file_by_subject(grade, subject)
 
-    # To'liq yo'lni olish uchun:
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     if file_path:
         full_path = os.path.join(BASE_DIR, file_path)
-    else:
-        full_path = None
+        if os.path.exists(full_path):
+            subject_display = subject.replace("_", " ").capitalize()
+            caption = (
+                f"📚 Fan: {grade} {subject_display}\n"
+                f"❗️Barcha Imtihon javoblarini bizning botimiz orqali bepul yuklab oling:\n\n"
+                f"🔗 @imtihon_javoblari_2025robot\n"
+                f"🔗 @imtihon_javoblari_2025robot"
+            )
 
-    # DEBUG uchun:
-    print(f"DEBUG: full_path = {full_path}")
-    print(f"DEBUG: exists = {os.path.exists(full_path) if full_path else False}")
-
-    if full_path and os.path.exists(full_path):
-        subject = callback.data.replace("_", " ").lower()
-        caption = (
-            f"📚 Fan: {grade} {subject.capitalize()}\n"
-            f"❗️Barcha Imtihon javoblarini bizning botimiz orqali bepul yuklab oling:\n\n"
-            f"🔗 @imtihon_javoblari_2025robot\n"
-            f"🔗 @imtihon_javoblari_2025robot"
-        )
-
-        await callback.message.answer_document(
-            document=types.FSInputFile(full_path),
-            caption=caption
-        )
+            await callback.message.answer_document(
+                document=types.FSInputFile(full_path),
+                caption=caption
+            )
+        else:
+            await callback.message.answer("Kechirasiz, fayl topilmadi.")
     else:
         await callback.message.answer("Kechirasiz, fayl topilmadi.")
 
@@ -81,7 +73,7 @@ async def subject_handler(callback: types.CallbackQuery):
 
 async def main():
     init_db()
-    # seed_files() # Faol qilish faqat birinchi ishga tushirishda kerak
+    seed_files()  # 1 martalik uchun, agar fayllar bazada bor bo'lsa o'chirib qo'yish mumkin
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
