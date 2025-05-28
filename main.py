@@ -5,6 +5,7 @@ from aiogram.filters import CommandStart
 from config import BOT_TOKEN
 from keyboards import main_menu, back_menu, subject_menu
 from database import init_db, get_subjects_by_grade, get_file_by_subject
+from seed_files import seed_files  # 🚀 Qo‘shildi
 
 # Bot va dispatcher obyektlarini yaratamiz
 bot = Bot(token=BOT_TOKEN)
@@ -25,7 +26,6 @@ async def start_handler(message: types.Message):
     )
 
     await message.answer(welcome_text, reply_markup=main_menu(), parse_mode="HTML")
-
 
 @dp.message(F.text.in_(["9-sinf", "11-sinf"]))
 async def grade_handler(message: types.Message):
@@ -53,7 +53,7 @@ async def subject_handler(callback: types.CallbackQuery):
     if file_path and os.path.exists(file_path):
         subject = callback.data.replace("_", " ").lower()
         caption = (
-            f"📚 Fan: {subject}\n"
+            f"📚 Fan: {grade} {subject.capitalize()}\n"
             f"❗️Barcha Imtihon javoblarini bizning botimiz orqali bepul yuklab oling:\n\n"
             f"🔗 @imtihon_javoblari_2025robot\n"
             f"🔗 @imtihon_javoblari_2025robot"
@@ -63,17 +63,26 @@ async def subject_handler(callback: types.CallbackQuery):
             document=types.FSInputFile(file_path),
             caption=caption
         )
-
     else:
         await callback.message.answer("Kechirasiz, fayl topilmadi.")
-    
+
     await callback.answer()
 
-async def main():
-    # Dastlab bazani ishga tushiramiz
-    init_db()
+# 🚨 Fayllar bazada mavjud emasligini tekshiramiz
+def should_seed():
+    import sqlite3
+    conn = sqlite3.connect("bot.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM files")
+    count = cursor.fetchone()[0]
+    conn.close()
+    return count == 0
 
-    # Botni ishga tushuramiz
+async def main():
+    init_db()
+    if should_seed():      # 👈 Fayllar yo‘q bo‘lsa
+        seed_files()       # ➕ Fayllarni yuklab beradi
+
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
