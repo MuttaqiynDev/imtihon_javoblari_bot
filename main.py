@@ -10,6 +10,7 @@ from seed_files import seed_files  # faqat 1-marta ishga tushirish uchun
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
+# Foydalanuvchilar sinfini saqlash uchun
 user_grade = {}
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # main.py joylashgan papka
@@ -29,11 +30,17 @@ async def start_handler(message: types.Message):
 async def grade_handler(message: types.Message):
     grade = message.text
     user_grade[message.from_user.id] = grade
+    
+    print(f"[DEBUG] Foydalanuvchi {message.from_user.id} {grade}ni tanladi")
+    
     subjects = get_subjects_by_grade(grade)
+    
     if subjects:
-        await message.answer(f"{grade} uchun fanlar ro'yxati:", reply_markup=subject_menu(subjects))
+        subjects_text = "\n".join([f"• {subject}" for subject in subjects])
+        response_text = f"📚 <b>{grade}</b> uchun mavjud fanlar:\n\n{subjects_text}\n\n👇 Kerakli fanni tanlang:"
+        await message.answer(response_text, reply_markup=subject_menu(subjects), parse_mode="HTML")
     else:
-        await message.answer("Hozircha bu sinf uchun materiallar mavjud emas.")
+        await message.answer(f"❌ Kechirasiz, <b>{grade}</b> uchun hozircha materiallar mavjud emas.", parse_mode="HTML")
 
 @dp.callback_query()
 async def subject_handler(callback: types.CallbackQuery):
@@ -41,46 +48,70 @@ async def subject_handler(callback: types.CallbackQuery):
     grade = user_grade.get(user_id)
 
     if not grade:
-        await callback.message.answer("Iltimos, avval sinfni tanlang.")
+        await callback.message.answer("❌ Iltimos, avval sinfni tanlang.\n\n/start buyrug'ini bosing.")
         await callback.answer()
         return
 
     subject = callback.data
+    print(f"[DEBUG] Foydalanuvchi: {user_id}, Sinf: {grade}, Fan: {subject}")
+    
     file_path = get_file_by_subject(grade, subject)
-
-    print(f"[DEBUG] Bazadan olingan file_path: {file_path}")  # Bu satrni qo'shamiz
+    print(f"[DEBUG] Bazadan olingan file_path: {file_path}")
 
     if file_path:
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         full_path = os.path.join(BASE_DIR, file_path)
         print(f"[DEBUG] To'liq fayl yo'li: {full_path}")
 
         if os.path.exists(full_path):
-            # Fayl topildi
-            subject_display = subject.replace("_", " ").capitalize()
+            # Fayl topildi va yuborilmoqda
+            subject_display = subject.replace("_", " ").title()
             caption = (
-                f"📚 Fan: {grade} {subject_display}\n"
-                f"❗️Barcha Imtihon javoblarini bizning botimiz orqali bepul yuklab oling:\n\n"
+                f"📚 <b>Fan:</b> {grade} {subject_display}\n\n"
+                f"✅ Fayl muvaffaqiyatli yuklandi!\n\n"
+                f"❗️ Barcha imtihon javoblarini bizning botimiz orqali bepul yuklab oling:\n\n"
                 f"🔗 @imtihon_javoblari_2025robot\n"
                 f"🔗 @imtihon_javoblari_2025robot"
             )
-            await callback.message.answer_document(
-                document=types.FSInputFile(full_path),
-                caption=caption
-            )
+            
+            try:
+                await callback.message.answer_document(
+                    document=types.FSInputFile(full_path),
+                    caption=caption,
+                    parse_mode="HTML"
+                )
+                print(f"[SUCCESS] Fayl yuborildi: {subject_display}")
+            except Exception as e:
+                print(f"[ERROR] Fayl yuborishda xatolik: {e}")
+                await callback.message.answer("❌ Faylni yuborishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
         else:
-            print(f"[ERROR] Fayl topilmadi: {full_path}")  # Error log
-            await callback.message.answer("Kechirasiz, fayl topilmadi.")
+            print(f"[ERROR] Fayl topilmadi: {full_path}")
+            await callback.message.answer("❌ Kechirasiz, fayl topilmadi yoki olib tashlangan.")
     else:
-        print("[ERROR] Bazadan file_path topilmadi.")
-        await callback.message.answer("Kechirasiz, fayl topilmadi.")
+        print(f"[ERROR] Bazadan file_path topilmadi: {grade} | {subject}")
+        await callback.message.answer("❌ Kechirasiz, bu fan uchun fayl mavjud emas.")
 
     await callback.answer()
 
+# Noma'lum xabarlar uchun handler
+@dp.message()
+async def unknown_message_handler(message: types.Message):
+    await message.answer(
+        "❓ Kechirasiz, men sizni tushunmadim.\n\n"
+        "Iltimos, quyidagi tugmalardan foydalaning yoki /start buyrug'ini bosing.",
+        reply_markup=main_menu()
+    )
 
 async def main():
+    print("[BOT] Bot ishga tushmoqda...")
+    
+    # Ma'lumotlar bazasini ishga tushirish
     init_db()
-    seed_files()  # faqat bir martalik ishga tushiring (keyin olib tashlang)
+    
+    # Fayllarni bazaga yuklash (faqat birinchi marta)
+    # Agar kerak bo'lsa, quyidagi satrni izohdan chiqaring:
+    # seed_files()
+    
+    print("[BOT] Bot tayyor! Polling boshlanmoqda...")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
