@@ -48,15 +48,19 @@ async def subject_handler(callback: types.CallbackQuery):
     subject = callback.data
     file_path = get_file_by_subject(grade, subject)
 
+    print(f"[DEBUG] Bazadan olingan file_path: {file_path}")  # Bu satrni qo'shamiz
+
     if file_path:
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         full_path = os.path.join(BASE_DIR, file_path)
-        print(f"[DEBUG] Fayl izlanmoqda: {full_path}")
+        print(f"[DEBUG] To'liq fayl yo'li: {full_path}")
 
         if os.path.exists(full_path):
+            # Fayl topildi
             subject_display = subject.replace("_", " ").capitalize()
             caption = (
                 f"📚 Fan: {grade} {subject_display}\n"
-                f"❗️Barcha Imtihon javoblarini bizning botimiz orqali bepul yuklab oling:\n\n"
+                f"❗️Barcha Imtihon javoblarini bizning botimiz orqali bepul yuklab oling:\n\n"
                 f"🔗 @imtihon_javoblari_2025robot\n"
                 f"🔗 @imtihon_javoblari_2025robot"
             )
@@ -65,11 +69,14 @@ async def subject_handler(callback: types.CallbackQuery):
                 caption=caption
             )
         else:
+            print(f"[ERROR] Fayl topilmadi: {full_path}")  # Error log
             await callback.message.answer("Kechirasiz, fayl topilmadi.")
     else:
+        print("[ERROR] Bazadan file_path topilmadi.")
         await callback.message.answer("Kechirasiz, fayl topilmadi.")
 
     await callback.answer()
+
 
 async def main():
     init_db()
