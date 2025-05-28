@@ -36,6 +36,8 @@ async def grade_handler(message: types.Message):
     else:
         await message.answer("Hozircha bu sinf uchun materiallar mavjud emas.")
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 @dp.callback_query()
 async def subject_handler(callback: types.CallbackQuery):
     user_id = callback.from_user.id
@@ -50,7 +52,7 @@ async def subject_handler(callback: types.CallbackQuery):
     file_path = get_file_by_subject(grade, subject)
 
     if file_path:
-        full_path = os.path.join(BASE_DIR, file_path)
+        full_path = os.path.join(BASE_DIR, file_path)  # To‘liq yo‘lni hosil qilamiz
         if os.path.exists(full_path):
             subject_display = subject.replace("_", " ").capitalize()
             caption = (
@@ -70,6 +72,7 @@ async def subject_handler(callback: types.CallbackQuery):
         await callback.message.answer("Kechirasiz, fayl topilmadi.")
 
     await callback.answer()
+
 
 async def main():
     init_db()

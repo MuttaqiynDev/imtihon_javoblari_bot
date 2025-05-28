@@ -15,6 +15,7 @@ def seed_files():
             # Nisbiy fayl yo'li bazaga saqlanadi: files/9-sinf/algebra.pdf
             relative_path = os.path.join("files", grade_folder, filename)
 
+
             subject = os.path.splitext(filename)[0].replace("-", "_").lower()
 
             add_file(grade=grade_folder, subject=subject, file_path=relative_path)
