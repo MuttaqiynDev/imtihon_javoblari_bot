@@ -51,7 +51,7 @@ async def subject_handler(callback: types.CallbackQuery):
     print(f"[DEBUG] Bazadan olingan file_path: {file_path}")  # Bu satrni qo'shamiz
 
     if file_path:
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        file_path = file_path.replace("\\", "/")
         full_path = os.path.join(BASE_DIR, file_path)
         print(f"[DEBUG] To'liq fayl yo'li: {full_path}")
 
