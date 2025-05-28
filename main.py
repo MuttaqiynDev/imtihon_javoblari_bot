@@ -5,8 +5,8 @@ from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
 from config import BOT_TOKEN
 from keyboards import main_menu, subject_menu
-from database import init_db, get_subjects_by_grade, get_file_by_subject
-from seed_files import seed_files  # faqat 1-marta ishga tushirish uchun
+from database import init_db, get_subjects_by_grade, get_file_by_subject # faqat 1-marta ishga tushirish uchun
+from keep_alive import keep_alive
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -14,6 +14,8 @@ dp = Dispatcher()
 user_grade = {}
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # main.py joylashgan papka
+
+keep_alive()
 
 @dp.message(CommandStart())
 async def start_handler(message: types.Message):
@@ -78,16 +80,6 @@ async def subject_handler(callback: types.CallbackQuery):
 
     await callback.answer()
 
-async def handle(request):
-    return web.Response(text="Bot tirik!")
-
-async def start_web_app():
-    app = web.Application()
-    app.router.add_get("/", handle)
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", 8080)
-    await site.start()
 
 async def main():
     init_db()
