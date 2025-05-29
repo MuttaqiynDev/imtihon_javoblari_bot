@@ -1,12 +1,11 @@
 import asyncio
-from aiohttp import web
 import os
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
 from config import BOT_TOKEN
 from keyboards import main_menu, subject_menu
 from database import init_db, get_subjects_by_grade, get_file_by_subject # faqat 1-marta ishga tushirish uchun
-from keep_alive import keep_alive
+
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
