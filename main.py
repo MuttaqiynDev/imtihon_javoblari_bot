@@ -14,7 +14,7 @@ user_grade = {}
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # main.py joylashgan papka
 
-keep_alive()
+
 
 @dp.message(CommandStart())
 async def start_handler(message: types.Message):
