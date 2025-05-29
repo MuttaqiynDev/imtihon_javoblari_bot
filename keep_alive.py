@@ -3,7 +3,7 @@ import asyncio
 import threading
 
 async def handle(request):
-    return web.Response(text="Bot tirik!")
+    return web.Response(text="start")
 
 async def start_app():
     app = web.Application()
