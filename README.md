@@ -10,7 +10,7 @@ _Built with the tools and technologies:_
 
 ![Markdown](https://img.shields.io/badge/Markdown-Informational)
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
-![AIOHTTP](https://img.shields.io/badge/AIOHTTP-0.0.1-blue)
+![AIOGRAM](https://img.shields.io/badge/AIOHTTP-0.0.1-blue)
 
 ---
 
