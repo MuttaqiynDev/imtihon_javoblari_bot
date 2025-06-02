@@ -58,23 +58,23 @@ Build `imtihon_javoblari_bot` from the source and install dependencies:
 
 1. **Clone the repository:**
 
-```bash
-git clone https://github.com/MuttaqiyinDev/imtihon_javoblari_bot.git
-
+  ```bash
+    git clone https://github.com/MuttaqiyinDev/imtihon_javoblari_bot.git
+  ```
 2. Navigate to the project directory:
 
 
-
+```
 cd imtihon_javoblari_bot
-
+```
 3. Install the dependencies:
 
 
 
 Using pip:
-
+```
 pip install -r requirements.txt
-
+```
 
 ---
 
@@ -99,4 +99,3 @@ pytest
 
 
 ---
-
