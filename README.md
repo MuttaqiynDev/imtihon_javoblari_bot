@@ -4,7 +4,7 @@ _Empowering students with instant exam answers access._
 
 ![Last Commit](https://img.shields.io/github/last-commit/MuttaqiyinDev/imtihon_javoblari_bot?label=last%20commit)
 ![Language](https://img.shields.io/badge/python-100%25-blue)
-![Languages](https://img.shields.io/github/languages/count/MuttaqiyinDev/imtihon_javoblari_bot)
+
 
 _Built with the tools and technologies:_
 
@@ -59,7 +59,7 @@ Build `imtihon_javoblari_bot` from the source and install dependencies:
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/MuttaqiyinDev/imtihon_javoblari_bot
+git clone https://github.com/MuttaqiyinDev/imtihon_javoblari_bot.git
 
 2. Navigate to the project directory:
 
