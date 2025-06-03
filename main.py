@@ -4,8 +4,10 @@ from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
 from config import BOT_TOKEN
 from keyboards import main_menu, subject_menu
-from database import init_db, get_subjects_by_grade, get_file_by_subject # faqat 1-marta ishga tushirish uchun
+from database import init_db, get_subjects_by_grade, get_file_by_subject  # faqat 1-marta ishga tushirish uchun
 
+from flask import Flask  # ADD this import
+from threading import Thread  # ADD this import
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -14,8 +16,30 @@ user_grade = {}
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # main.py joylashgan papka
 
+# ==============================
+# 1) SET UP FLASK SERVER
+# ==============================
+flask_app = Flask(__name__)
 
+@flask_app.route("/", methods=["GET", "HEAD"])
+def home():
+    return "OK", 200
 
+@flask_app.route("/ping", methods=["GET", "HEAD"])
+def ping():
+    return "OK", 200
+
+@flask_app.route("/healthz", methods=["GET", "HEAD"])
+def healthz():
+    return "OK", 200
+
+def run_flask():
+    port = int(os.environ.get("PORT", "5000"))
+    flask_app.run(host="0.0.0.0", port=port, use_reloader=False, threaded=True)
+
+# ==============================
+# 2) TELEGRAM BOT FUNCTIONALITY
+# ==============================
 @dp.message(CommandStart())
 async def start_handler(message: types.Message):
     first_name = message.from_user.first_name
@@ -58,7 +82,6 @@ async def subject_handler(callback: types.CallbackQuery):
         print(f"[DEBUG] To'liq fayl yo'li: {full_path}")
 
         if os.path.exists(full_path):
-            # Fayl topildi
             subject_display = subject.replace("_", " ").capitalize()
             caption = (
                 f"📚 Fan: {subject_display}\n"
@@ -71,7 +94,7 @@ async def subject_handler(callback: types.CallbackQuery):
                 caption=caption
             )
         else:
-            print(f"[ERROR] Fayl topilmadi: {full_path}")  # Error log
+            print(f"[ERROR] Fayl topilmadi: {full_path}")
             await callback.message.answer("Kechirasiz, fayl topilmadi.")
     else:
         print("[ERROR] Bazadan file_path topilmadi.")
@@ -79,16 +102,16 @@ async def subject_handler(callback: types.CallbackQuery):
 
     await callback.answer()
 
-
 async def main():
     init_db()
     # seed_files()  # faqat bir marta
 
-    # Ikki ishni parallel bajaramiz:
-    await asyncio.gather(
-        dp.start_polling(bot),
-    
-    )
-    
+    # Start Flask server in a separate thread
+    flask_thread = Thread(target=run_flask)
+    flask_thread.start()
+
+    # Start Telegram bot
+    await dp.start_polling(bot)
+
 if __name__ == "__main__":
     asyncio.run(main())
