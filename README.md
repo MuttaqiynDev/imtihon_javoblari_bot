@@ -1,85 +1,101 @@
+# IMTIHON_JAVOBLARI_BOT
 
-````markdown
-# 📚 Imtihon Javoblari Bot
+_Empowering students with instant exam answers access._
 
-**Telegram bot** — 2025-yilgi imtihon javoblarini sinf va fan bo‘yicha bepul taqdim etadi.
+![Last Commit](https://img.shields.io/github/last-commit/MuttaqiyinDev/imtihon_javoblari_bot?label=last%20commit)
+![Language](https://img.shields.io/badge/python-100%25-blue)
 
----
 
-## ⚙️ Funksiyalar
+_Built with the tools and technologies:_
 
-- Foydalanuvchi o‘z sinfini tanlaydi (9-sinf, 11-sinf)
-- Tanlangan sinf uchun mavjud fanlar ro‘yxati ko‘rsatiladi
-- Fan tanlanganda, tegishli imtihon javobi fayli yuboriladi
-- Har bir fayl bilan qo‘shimcha ma’lumot va bot linki beriladi
-
----
-
-## 🛠 O‘rnatish
-
-1. **Repository-ni klonlash:**
-
-   ```bash
-   git clone https://github.com/MuttaqiynDev/imtihon_javoblari_bot.git
-   cd imtihon_javoblari_bot
-````
-
-2. **Virtual muhit yaratish va kutubxonalarni o‘rnatish:**
-
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate      # Linux/macOS
-   venv\Scripts\activate         # Windows
-
-   pip install -r requirements.txt
-   ```
-
-3. **`config.py` faylini yaratib, bot tokenini kiriting:**
-
-   ```python
-   BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
-   ```
-
-4. **Bazani boshlash va fayllarni qo‘shish:**
-
-   * `seed_files.py` skriptini ishga tushiring:
-
-   ```bash
-   python seed_files.py
-   ```
+![Markdown](https://img.shields.io/badge/Markdown-Informational)
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+![AIOGRAM](https://img.shields.io/badge/AIOGRAM-3.17.0-blue)
 
 ---
 
-## 🚀 Ishga tushirish
+## Table of Contents
 
-```bash
-python main.py
+- [Overview](#overview)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Testing](#testing)
+
+---
+
+## Overview
+
+**Imtihon Javoblari Bot** is a Telegram bot designed to streamline exam preparation by providing students with free access to categorized exam answers for the year 2025.
+
+### Why Imtihon Javoblari Bot?
+
+This project aims to facilitate students' exam preparation by offering a centralized platform for essential resources. The core features include:
+
+- 📚 **Exam Answer Access**: Provides categorized exam answers, making study resources easily accessible.
+- 🗂 **Database Management**: Efficiently stores and retrieves educational materials, enhancing organization.
+- 🧩 **User Interaction**: Offers dynamic keyboard layouts for seamless navigation and selection.
+- 🌱 **Seeding Functionality**: Initializes the database with essential data, reducing manual entry for developers.
+- 🔐 **Secure Authentication**: Ensures secure communication with the Telegram API through proper token management.
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+This project requires the following dependencies:
+
+- **Programming Language**: Python  
+- **Package Manager**: Pip
+
+---
+
+### Installation
+
+Build `imtihon_javoblari_bot` from the source and install dependencies:
+
+1. **Clone the repository:**
+
+  ```bash
+    git clone https://github.com/MuttaqiyinDev/imtihon_javoblari_bot.git
+  ```
+2. Navigate to the project directory:
+
+
+```
+cd imtihon_javoblari_bot
+```
+3. Install the dependencies:
+
+
+
+Using pip:
+```
+pip install -r requirements.txt
 ```
 
 ---
 
-## 📁 Loyihaning asosiy fayllari
+Usage
 
-| Fayl nomi       | Vazifasi                      |
-| --------------- | ----------------------------- |
-| `main.py`       | Bot logikasi                  |
-| `database.py`   | SQLite bazasi bilan ishlash   |
-| `keyboards.py`  | Telegram klaviatura tugmalari |
-| `seed_files.py` | Fayllarni bazaga yuklash      |
-| `files/`        | Fan fayllari joylashgan papka |
+Run the project with:
+
+python {entrypoint}
+
+Replace {entrypoint} with your main Python file (e.g. main.py or bot.py).
+
 
 ---
 
-## 💡 Qo‘shimcha maslahatlar
+Testing
 
-* Botni serverda doimiy ishlashi uchun `systemd` yoki `tmux` kabi vositalardan foydalaning.
-* Tokenni hech qachon oshkor qilmang.
-* Muammolar bo‘lsa, Issues bo‘limida xabar qoldiring.
+imtihon_javoblari_bot uses the {test_framework} test framework. Run the test suite with:
+
+Using pip:
+
+pytest
+
 
 ---
-
-© 2025 Imtihon Javoblari Bot
-
-```
-
-
