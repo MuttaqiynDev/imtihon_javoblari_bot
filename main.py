@@ -1,5 +1,7 @@
 import asyncio
 import os
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
 from config import BOT_TOKEN
@@ -107,8 +109,7 @@ async def main():
     init_db()
     # seed_files()  # faqat bir marta
 
-    # Start Flask server in a separate thread
-    class DummyHandler(BaseHTTPRequestHandler):
+class DummyHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
@@ -124,12 +125,7 @@ def start_dummy_server():
     print(f"Dummy server listening on port {port}")
     server.serve_forever()
 
-    
-
-    # Start Telegram bot
-    await dp.start_polling(bot)
-
 if __name__ == "__main__":
-    threading.Thread(target=start_dummy_server, daemon=True).start()
+threading.Thread(target=start_dummy_server, daemon=True).start()
 
     asyncio.run(main())
