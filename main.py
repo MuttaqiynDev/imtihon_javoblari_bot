@@ -5,9 +5,10 @@ from aiogram.filters import CommandStart
 from config import BOT_TOKEN
 from keyboards import main_menu, subject_menu
 from database import init_db, get_subjects_by_grade, get_file_by_subject  # faqat 1-marta ishga tushirish uchun
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from flask import Flask
 
-from flask import Flask  # ADD this import
-from threading import Thread  # ADD this import
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -107,11 +108,28 @@ async def main():
     # seed_files()  # faqat bir marta
 
     # Start Flask server in a separate thread
-    flask_thread = Thread(target=run_flask)
-    flask_thread.start()
+    class DummyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"AFK bot is alive!")
+
+    def do_HEAD(self):
+        self.send_response(200)
+        self.end_headers()
+
+def start_dummy_server():
+    port = int(os.environ.get("PORT", 10000))  # Render injects this
+    server = HTTPServer(("0.0.0.0", port), DummyHandler)
+    print(f"Dummy server listening on port {port}")
+    server.serve_forever()
+
+    
 
     # Start Telegram bot
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
+    threading.Thread(target=start_dummy_server, daemon=True).start()
+
     asyncio.run(main())
