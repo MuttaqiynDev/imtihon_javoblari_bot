@@ -126,6 +126,6 @@ def start_dummy_server():
     server.serve_forever()
 
 if __name__ == "__main__":
-threading.Thread(target=start_dummy_server, daemon=True).start()
+    threading.Thread(target=start_dummy_server, daemon=True).start()
 
     asyncio.run(main())
